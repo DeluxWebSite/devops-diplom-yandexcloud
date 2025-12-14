@@ -52,12 +52,12 @@
 
 ---
 
-![]()
-![]()
-![]()
-![]()
-![]()
-![]()
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-41-28.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-43-54.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-45-59.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-46-21.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-46-38.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-47-29.png)
 
 ---
 ### Создание Kubernetes кластера
