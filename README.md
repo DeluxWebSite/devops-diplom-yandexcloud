@@ -112,7 +112,7 @@
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image4.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image5.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image6.png)
-
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image7.png)
 
 ---
 ### Создание тестового приложения
