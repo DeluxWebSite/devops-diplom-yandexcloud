@@ -53,6 +53,10 @@
 ---
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-41-28.png)
+
+- так как нельзя настроить удаленное хранение состояния конфигурации терраформ в бакете, не создав при этом сам бакет на первом этапе создал сервисный аккаунт, бакет, ключи и сеть, затем перенес стейт в бакет.
+- при создании секретных ключей для бакета, для передачи на этап переноса стейта в бакет, в файле output.tf создал шаблон файла provider.tf с секретными ключами и при успешном создании сервисного аккаунта, бакета, и ключей в директории /backend/ создасться файл provider.tf для переноса стейта в s3 с секретными ключами.
+
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-43-54.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-45-59.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/Снимок%20экрана%20от%202025-12-14%2015-46-21.png)
@@ -79,6 +83,34 @@
 1. Работоспособный Kubernetes кластер.
 2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
+
+---
+- сделал 2й вариант развертывания K8s с помощью terraform resource для yandex-cloud, развернул,увидел цену такого варианта, удалил и сделал вариант 1.
+
+#### шаги:
+- "cd /k8s-ansible"
+- terraform init -upgrade
+- git clone git@github.com:kubernetes-sigs/kubespray.git
+- cd kubespray
+- git checkout release-2.26
+- pip install -r requirements.txt --break-system-packages
+- pip install --ignore-installed ruamel.yaml --break-system-packages
+- cp -rfp inventory/sample inventory/k8s
+- declare -a IPS=("$(cat ../hosts.ini)")
+- CONFIG_FILE=inventory/k8s/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+- nano inventory/k8s/hosts.yaml
+- Настройки будущего кластера находятся в папке group_vars. Чтобы не устанавливать Helm вручную на каждом мастер-узле, установил в файле addons.yaml параметр helm_enable равным true: helm_enabled: true
+- В том же файле addons.yaml раскомментировал и активировал nginx-ingress, а также параметр ingress_nginx_host_network, благодаря которому, к каждому узлу будет привязана пода nginx-ingress: ingress_nginx_enabled: true ingress_nginx_host_network: true
+- Добавиk в конфигурацию Ansible пользователя, под которым логинимся по SSH: nano ansible.cfg
+- В группе ssh_connection параметр remote_user, равный root: remote_user=ubuntu
+- local_volume_provisioner_enabled: true # активируем local volume provisioner
+- Выполнил её в корне директории kubespray: ansible-playbook -i inventory/k8s/hosts.yaml --become --become-user=root cluster.yml
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image2.png)
+![]()
+![]()
+![]()
 
 ---
 ### Создание тестового приложения

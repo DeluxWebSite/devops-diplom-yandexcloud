@@ -6,7 +6,7 @@ terraform {
   }
   required_version = ">= 0.8"
 
- backend "s3" {
+  backend "s3" {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
    }
@@ -23,5 +23,8 @@ terraform {
 }
 
 provider "yandex" {
+  service_account_key_file = file("~/.ssh/authorized_key.json")
+  cloud_id  = "${var.cloud_id}"
+  folder_id = var.folder_id
   zone = var.yc-zone
 }

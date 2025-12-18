@@ -66,7 +66,6 @@ terraform {
 }
 
 provider "yandex" {
-  service_account_key_file = file("~/.ssh/authorized_key.json")
   zone = var.yc-zone
 }
   EOT
