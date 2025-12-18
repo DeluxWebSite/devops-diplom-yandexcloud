@@ -85,7 +85,7 @@
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
 ---
-- сделал 2й вариант развертывания K8s с помощью terraform resource для yandex-cloud, развернул,увидел цену такого варианта, удалил и сделал вариант 1.
+* сделал 2й вариант развертывания K8s с помощью terraform resource для yandex-cloud, развернул,увидел цену такого варианта, удалил и сделал вариант 1.
 
 #### шаги:
 - "cd /k8s-ansible"
@@ -100,7 +100,7 @@
 - CONFIG_FILE=inventory/k8s/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 - nano inventory/k8s/hosts.yaml
 - Настройки будущего кластера находятся в папке group_vars. Чтобы не устанавливать Helm вручную на каждом мастер-узле, установил в файле addons.yaml параметр helm_enable равным true: helm_enabled: true
-- В том же файле addons.yaml раскомментировал и активировал nginx-ingress, а также параметр ingress_nginx_host_network, благодаря которому, к каждому узлу будет привязана пода nginx-ingress: ingress_nginx_enabled: true ingress_nginx_host_network: true
+- В том же файле addons.yaml раскомментировал и активировал nginx-ingress, а также параметр ingress_nginx_host_network, благодаря которому, к каждому узлу будет привязана пода nginx-ingress: ingress_nginx_enabled: true ingress_nginx_host_network: true, metrics_server_enabled: true
 - Добавиk в конфигурацию Ansible пользователя, под которым логинимся по SSH: nano ansible.cfg
 - В группе ssh_connection параметр remote_user, равный root: remote_user=ubuntu
 - local_volume_provisioner_enabled: true # активируем local volume provisioner
@@ -108,7 +108,7 @@
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image2.png)
-![]()
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image3.png)
 ![]()
 ![]()
 
