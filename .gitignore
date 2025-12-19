@@ -22,3 +22,6 @@ variables.tf
 **/provider.tf
 */provider.tf
 provider.tf
+/k8s-ansible/provider.tf
+/backend/provider.tf
+
