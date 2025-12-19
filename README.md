@@ -114,6 +114,16 @@
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image6.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image7.png)
 
+- исправил ошибку добавлением зеркала host: https://mirror.gcr.io в containerd.yml
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image8.png)
+
+![]()
+![]()
+![]()
+![]()
+
+
 ---
 ### Создание тестового приложения
 
