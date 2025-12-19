@@ -120,7 +120,12 @@
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image11.png)
 
-- исправил ошибку: mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config
+* исправил ошибку:
+- kubectl config get-contexts
+- kubectl get nodes -v=10
+- mkdir -p $HOME/.kube
+- sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+- sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image9.png)
@@ -143,7 +148,12 @@
 Ожидаемый результат:
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
+
+- [Github](https://github.com/DeluxWebSite/app-nginx-static)
+
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
+
+- [DockerHub](https://hub.docker.com/)
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
