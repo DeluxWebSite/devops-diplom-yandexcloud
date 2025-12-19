@@ -118,11 +118,14 @@
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image8.png)
 
-![]()
-![]()
-![]()
-![]()
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image11.png)
 
+- исправил ошибку: mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image9.png)
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image10.png)
 
 ---
 ### Создание тестового приложения
