@@ -19,5 +19,5 @@ variables.tf
 */kubespray
 /kubespray
 provider.tf
-**/provider.tf/*
-*/provider.tf/*
+**/provider.tf
+*/provider.tf
