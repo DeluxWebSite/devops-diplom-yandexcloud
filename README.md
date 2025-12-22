@@ -295,6 +295,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
   hostPath:
     path: "/var/jenkins_home"
 
@@ -306,6 +307,7 @@ metadata:
   name: jenkins-pvc
   namespace: devops-tools
 spec:
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -352,6 +354,7 @@ initContainers:
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image18.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image20.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image23.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image21.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image22.png)
 
