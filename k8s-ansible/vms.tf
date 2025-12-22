@@ -10,7 +10,7 @@ resource "yandex_compute_instance" "cluster-k8s" {
   }
 
   scheduling_policy {
-  preemptible = true
+  preemptible = false
   }
 
   resources {
