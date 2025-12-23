@@ -395,14 +395,6 @@ initContainers:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image21.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image22.png)
 
-* перезапустил несколько раз этот шаг и все вольюмы заработали, но стал падать под(
-
-![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image24.png)
-![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image25.png)
-![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image26.png)
-![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
-![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
-
 ---
 
 ## Что необходимо для сдачи задания?
