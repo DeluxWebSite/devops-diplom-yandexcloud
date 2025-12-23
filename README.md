@@ -257,6 +257,43 @@ spec:
 
 ---
 
+### Деплой инфраструктуры в terraform pipeline
+
+1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
+
+Ожидаемый результат:
+
+1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
+2. Http доступ на 80 порту к web интерфейсу grafana.
+3. Дашборды в grafana отображающие состояние Kubernetes кластера.
+4. Http доступ на 80 порту к тестовому приложению.
+5. Atlantis или terraform cloud или ci/cd-terraform
+
+---
+
+* ci/cd-terraform сделал в GitHub Actions -- /github/workflows/cicd.yaml
+
+---
+
+### Установка и настройка CI/CD
+
+Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
+
+Цель:
+
+1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
+2. Автоматический деплой нового docker образа.
+
+Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
+
+Ожидаемый результат:
+
+1. Интерфейс ci/cd сервиса доступен по http.
+2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
+3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистри, а также деплой соответствующего Docker образа в кластер Kubernetes.
+
+---
+
 * Для настройки CI/CD процессов выбран Jenkins как наиболее широко применяемое open-source решение.
 
 * git clone <https://github.com/scriptcamp/kubernetes-jenkins>
@@ -358,38 +395,13 @@ initContainers:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image21.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image22.png)
 
----
+* перезапустил несколько раз этот шаг и все вольюмы заработали, но стал падать под(
 
-### Деплой инфраструктуры в terraform pipeline
-
-1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
-
-Ожидаемый результат:
-
-1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
-2. Http доступ на 80 порту к web интерфейсу grafana.
-3. Дашборды в grafana отображающие состояние Kubernetes кластера.
-4. Http доступ на 80 порту к тестовому приложению.
-5. Atlantis или terraform cloud или ci/cd-terraform
-
----
-
-### Установка и настройка CI/CD
-
-Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
-
-Цель:
-
-1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
-2. Автоматический деплой нового docker образа.
-
-Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
-
-Ожидаемый результат:
-
-1. Интерфейс ci/cd сервиса доступен по http.
-2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
-3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистри, а также деплой соответствующего Docker образа в кластер Kubernetes.
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image24.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image25.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image26.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
 
 ---
 
