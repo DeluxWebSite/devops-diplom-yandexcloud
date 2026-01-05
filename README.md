@@ -502,17 +502,24 @@ pipeline {
 ```
 
 > но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions*
+
 > добавил Secrets для доступа на Git, DockerHub, K8S*
+
 ![добавил Secrets для доступа на Git, DockerHub, K8S](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
 > создал pipline*
+
 ![создал pipline](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
 > создал и запустил runner*
+
 ![создал и запустил runner](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image29.png)
 > добавил строку с тегом на сайт*
+
 ![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image30.png)
 > новые версии image удачно загружаются на Dockerhub*
+
 ![новые версии image удачно загружаются на Dockerhub](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
 > возникла ошибка с deployment на cluster k8s*
+
 ![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image32.png)
 ---
 
