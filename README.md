@@ -95,16 +95,19 @@
 
 * "cd /k8s-ansible"
 
-* terraform init -upgrade
-* git clone <git@github.com>:kubernetes-sigs/kubespray.git
-* cd kubespray
-* git checkout release-2.26
-* pip install -r requirements.txt --break-system-packages
-* pip install --ignore-installed ruamel.yaml --break-system-packages
-* cp -rfp inventory/sample inventory/k8s
-* declare -a IPS=("$(cat ../hosts.ini)")
-* CONFIG_FILE=inventory/k8s/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
-* nano inventory/k8s/hosts.yaml
+```
+ terraform init -upgrade
+ git clone <git@github.com>:kubernetes-sigs/kubespray.git
+ cd kubespray
+ git checkout release-2.26
+ pip install -r requirements.txt --break-system-packages
+ pip install --ignore-installed ruamel.yaml --break-system-packages
+ cp -rfp inventory/sample inventory/k8s
+ declare -a IPS=("$(cat ../hosts.ini)")
+ CONFIG_FILE=inventory/k8s/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+ nano inventory/k8s/hosts.yaml
+```
+
 * Настройки будущего кластера находятся в папке group_vars. Чтобы не устанавливать Helm вручную на каждом мастер-узле, установил в файле addons.yaml параметр helm_enable равным true: helm_enabled: true
 * В том же файле addons.yaml раскомментировал и активировал nginx-ingress, а также параметр ingress_nginx_host_network, благодаря которому, к каждому узлу будет привязана пода nginx-ingress: ingress_nginx_enabled: true ingress_nginx_host_network: true, metrics_server_enabled: true
 * Добавиk в конфигурацию Ansible пользователя, под которым логинимся по SSH: nano ansible.cfg
@@ -126,14 +129,14 @@
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image11.png)
 
-* исправил ошибку:
+```
+ kubectl config get-contexts
 
-* kubectl config get-contexts
-
-* kubectl get nodes -v=10
-* mkdir -p $HOME/.kube
-* sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-* sudo chown $(id -u):$(id -g) $HOME/.kube/config
+ kubectl get nodes -v=10
+ mkdir -p $HOME/.kube
+ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image9.png)
 
@@ -183,31 +186,40 @@
 
 * шаги 3го этапа:
 
-* kubectl create namespace monitoring
+```
+kubectl create namespace monitoring
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image13.png)
 
-* helm repo add prometheus-community <https://prometheus-community.github.io/helm-charts>
-* helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+```
+ helm repo add prometheus-community <https://prometheus-community.github.io/helm-charts>
+ helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image14.png)
 
-* kubectl get pods -n monitoring
+```
+kubectl get pods -n monitoring
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image13.png)
 
-* kubectl get secret -n monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo //пароль от графана
-* доступ к Grafana по внешнему ip адресу, для чего создаем файл values.yml:
+```
+kubectl get secret -n monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo //пароль от графана
+доступ к Grafana по внешнему ip адресу, для чего создаем файл values.yml:
 grafana:
   service:
     type: NodePort
     nodePort: 32000
-* helm upgrade prometheus prometheus-community/kube-prometheus-stack -n monitoring -f values.yml
+helm upgrade prometheus prometheus-community/kube-prometheus-stack -n monitoring -f values.yml
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image15.png)
 
 * nginx-deployment.yml
 
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -229,9 +241,11 @@ spec:
           image: sergeymeljnick78/myapp:1.0
           ports:
             - containerPort: 80
+```
 
 * nginx-service.yml
 
+```
 apiVersion: v1
 kind: Service
 metadata:
@@ -246,10 +260,13 @@ spec:
       nodePort: 32001
   selector:
     app: nginx-static
+```
 
-* kubectl apply -f nginx-deployment.yml
-* kubectl apply -f nginx-service.yml
-* kubectl get pods -l app=nginx-static
+```
+ kubectl apply -f nginx-deployment.yml
+ kubectl apply -f nginx-service.yml
+ kubectl get pods -l app=nginx-static
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image16.png)
 
@@ -292,9 +309,11 @@ spec:
 
 * Для настройки CI/CD процессов выбран Jenkins как наиболее широко применяемое open-source решение.
 
-> git clone <https://github.com/scriptcamp/kubernetes-jenkins>
-> kubectl create namespace devops-tools
-> kubectl apply -f serviceAccount.yaml
+```
+ git clone <https://github.com/scriptcamp/kubernetes-jenkins>
+ kubectl create namespace devops-tools
+ kubectl apply -f serviceAccount.yaml
+```
 
 * в deployment.yaml тома постоянного хранения данных (настройки пользователя, пайплайны и т.д., так как наш кластер использует ради экономии прерываемые виртуальные машины).
 
@@ -383,15 +402,19 @@ initContainers:
 
 *Применяю изменения и проверяю успешный запуск Jenkins*
 
-> kubectl apply -f pv.yml
-> kubectl apply -f pvc.yml
-> kubectl apply -f deployment.yaml
-> kubectl get deployments -n devops-tools
-> kubectl get pods -n devops-tools
+```
+ kubectl apply -f pv.yml
+ kubectl apply -f pvc.yml
+ kubectl apply -f deployment.yaml
+ kubectl get deployments -n devops-tools
+ kubectl get pods -n devops-tools
+```
 
 *Далее сервис- дефортный файл service.yaml из скачанного репозитория, указав nodePort: 32002, так как дефолтный порт 32000 уже занят мониторингом (Grafana), а на порту 32001 работает сервер nginx.*
 
-> kubectl apply -f service.yaml
+```
+ kubectl apply -f service.yaml
+```
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image18.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image20.png)
@@ -407,83 +430,89 @@ initContainers:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image26.png)
 
 *составил pipline:*
->pipeline {
-> agent any
-> environment {
-> DOCKER_HUB_REPO = 'sergeymeljnick78/myapp'
-> DOCKER_CREDENTIALS_ID = 'docker-hub'  // ID учетных данных Docker Hub в Jenkins
-> KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-credentials'  // ID учетных данных для подключения к Kubernetes в Jenkins
-> }
-> stages {
-> stage('Checkout') {
-> steps {
-> // Получение кода из GitHub
-> git branch: 'master', url: '<https://github.com/DeluxWebSite/app-nginx-static.git>'
-> }
-> }
-> stage('Build Docker Image') {
-> steps {
-> script {
-> // Получение текущего тега, если есть
-> def tag = env.GIT_TAG_NAME ?: 'latest'
-> // Сборка Docker-образа
-> sh "docker build -t ${DOCKER_HUB_REPO}:${tag} ."
-> }
-> }
-> }
->
->        stage('Push to Docker Hub') {
->           steps {
->             withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_HUB_PAT')]) {
->               sh """
->               echo $DOCKER_HUB_PAT | docker login -u sergeymeljnick78 --password-stdin
->               docker push sergeymeljnick78/myapp:latest
->               """
->            }
->        }
-> }
->
->        stage('Deploy to Kubernetes') {
->            when {
->                tag "v*" // Деплой выполняется только при создании тега
->            }
->            steps {
->                script {
->                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
->                        def tag = env.GIT_TAG_NAME ?: 'latest'
->                        // Применение конфигурации деплоя в Kubernetes
->                        sh """
->                        kubectl set image deployment/nginx-static-deployment nginx-static=${DOCKER_HUB_REPO}:${tag}
->                        kubectl rollout status deployment/nginx-static-deployment
->                        """
->                    }
->                }
->            }
->        }
-> }
->
-> post {
-> success {
-> echo 'Pipeline completed successfully!'
-> }
-> failure {
-> echo 'Pipeline failed!'
-> }
-> }
->}
 
-*но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions*
-*добавил Secrets для доступа на Git, DockerHub, K8S*
+```
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_REPO = 'sergeymeljnick78/myapp'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // ID учетных данных Docker Hub в Jenkins
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-credentials'  // ID учетных данных для подключения к Kubernetes в Jenkins
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Получение кода из GitHub
+                git branch: 'master', url: 'https://github.com/DeluxWebSite/app-nginx-static.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Получение текущего тега, если есть
+                    def tag = env.GIT_TAG_NAME ?: 'latest'
+                    // Сборка Docker-образа
+                    sh "docker build -t ${DOCKER_HUB_REPO}:${tag} ."
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+           steps {
+             withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_HUB_PAT')]) {
+               sh """
+               echo $DOCKER_HUB_PAT | docker login -u sergeymeljnick78 --password-stdin
+               docker push sergeymeljnick78/myapp:latest
+               """
+            }
+        }
+    }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                tag "v*" // Деплой выполняется только при создании тега
+            }
+            steps {
+                script {
+                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+                        def tag = env.GIT_TAG_NAME ?: 'latest'
+                        // Применение конфигурации деплоя в Kubernetes
+                        sh """
+                        kubectl set image deployment/nginx-static-deployment nginx-static=${DOCKER_HUB_REPO}:${tag}
+                        kubectl rollout status deployment/nginx-static-deployment
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
+```
+
+> но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions*
+> добавил Secrets для доступа на Git, DockerHub, K8S*
 ![добавил Secrets для доступа на Git, DockerHub, K8S](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
-*создал pipline*
+> создал pipline*
 ![создал pipline](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
-*создал и запустил runner*
+> создал и запустил runner*
 ![создал и запустил runner](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image29.png)
-*добавил строку с тегом на сайт*
+> добавил строку с тегом на сайт*
 ![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image30.png)
-*новые версии image удачно загружаются на Dockerhub*
+> новые версии image удачно загружаются на Dockerhub*
 ![новые версии image удачно загружаются на Dockerhub](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
-*возникла ошибка с deployment на cluster k8s*
+> возникла ошибка с deployment на cluster k8s*
 ![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image32.png)
 ---
 
