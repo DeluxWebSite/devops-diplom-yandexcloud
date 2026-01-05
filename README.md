@@ -292,12 +292,13 @@ spec:
 
 * Для настройки CI/CD процессов выбран Jenkins как наиболее широко применяемое open-source решение.
 
-* git clone <https://github.com/scriptcamp/kubernetes-jenkins>
-* kubectl create namespace devops-tools
-* kubectl apply -f serviceAccount.yaml
+> git clone <https://github.com/scriptcamp/kubernetes-jenkins>
+> kubectl create namespace devops-tools
+> kubectl apply -f serviceAccount.yaml
 
 * в deployment.yaml тома постоянного хранения данных (настройки пользователя, пайплайны и т.д., так как наш кластер использует ради экономии прерываемые виртуальные машины).
 
+```
 volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
@@ -315,9 +316,11 @@ volumes:
             path: /var/run/docker.sock
         - name: docker-bin
           emptyDir: {}
+```
 
 * И соответственно требуемый persistent volume
 
+```
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -331,9 +334,11 @@ spec:
   storageClassName: local-storage
   hostPath:
     path: "/var/jenkins_home"
+```
 
 * А также persistent volume claim
 
+```
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -346,9 +351,11 @@ spec:
   resources:
     requests:
       storage: 1Gi
+```
 
 * Для корректной работы необходимо создать директорию /var/jenkins_home на всех нодах нашего кластера, для чего необходимо в deployment.yaml добавить инитконтейнер, устанавливающий docker и git
 
+```
 initContainers:
         - name: install-docker-git
           image: ubuntu:22.04
@@ -372,18 +379,19 @@ initContainers:
             mountPath: /var/jenkins_home
           - name: docker-socket
             mountPath: /var/run/docker.sock
+```
 
-*Применяю изменения и проверяю успешный запуск Jenkins
+*Применяю изменения и проверяю успешный запуск Jenkins*
 
-* kubectl apply -f pv.yml
-* kubectl apply -f pvc.yml
-* kubectl apply -f deployment.yaml
-* kubectl get deployments -n devops-tools
-* kubectl get pods -n devops-tools
+> kubectl apply -f pv.yml
+> kubectl apply -f pvc.yml
+> kubectl apply -f deployment.yaml
+> kubectl get deployments -n devops-tools
+> kubectl get pods -n devops-tools
 
-* Далее сервис- дефортный файл service.yaml из скачанного репозитория, указав nodePort: 32002, так как дефолтный порт 32000 уже занят мониторингом (Grafana), а на порту 32001 работает сервер nginx.
+*Далее сервис- дефортный файл service.yaml из скачанного репозитория, указав nodePort: 32002, так как дефолтный порт 32000 уже занят мониторингом (Grafana), а на порту 32001 работает сервер nginx.*
 
-* kubectl apply -f service.yaml
+> kubectl apply -f service.yaml
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image18.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image20.png)
@@ -391,88 +399,92 @@ initContainers:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image21.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image22.png)
 
+*решение ошибки в поде, указал правильный values:node3*
+
 ![решение ошибки в поде, указал правильный values:node3](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image25.png)
 
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image24.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image26.png)
 
-* составил pipline:
-pipeline {
-    agent any
+*составил pipline:*
+>pipeline {
+> agent any
+> environment {
+> DOCKER_HUB_REPO = 'sergeymeljnick78/myapp'
+> DOCKER_CREDENTIALS_ID = 'docker-hub'  // ID учетных данных Docker Hub в Jenkins
+> KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-credentials'  // ID учетных данных для подключения к Kubernetes в Jenkins
+> }
+> stages {
+> stage('Checkout') {
+> steps {
+> // Получение кода из GitHub
+> git branch: 'master', url: '<https://github.com/DeluxWebSite/app-nginx-static.git>'
+> }
+> }
+> stage('Build Docker Image') {
+> steps {
+> script {
+> // Получение текущего тега, если есть
+> def tag = env.GIT_TAG_NAME ?: 'latest'
+> // Сборка Docker-образа
+> sh "docker build -t ${DOCKER_HUB_REPO}:${tag} ."
+> }
+> }
+> }
+>
+>        stage('Push to Docker Hub') {
+>           steps {
+>             withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_HUB_PAT')]) {
+>               sh """
+>               echo $DOCKER_HUB_PAT | docker login -u sergeymeljnick78 --password-stdin
+>               docker push sergeymeljnick78/myapp:latest
+>               """
+>            }
+>        }
+> }
+>
+>        stage('Deploy to Kubernetes') {
+>            when {
+>                tag "v*" // Деплой выполняется только при создании тега
+>            }
+>            steps {
+>                script {
+>                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+>                        def tag = env.GIT_TAG_NAME ?: 'latest'
+>                        // Применение конфигурации деплоя в Kubernetes
+>                        sh """
+>                        kubectl set image deployment/nginx-static-deployment nginx-static=${DOCKER_HUB_REPO}:${tag}
+>                        kubectl rollout status deployment/nginx-static-deployment
+>                        """
+>                    }
+>                }
+>            }
+>        }
+> }
+>
+> post {
+> success {
+> echo 'Pipeline completed successfully!'
+> }
+> failure {
+> echo 'Pipeline failed!'
+> }
+> }
+>}
 
-    environment {
-        DOCKER_HUB_REPO = 'sergeymeljnick78/myapp'
-        DOCKER_CREDENTIALS_ID = 'docker-hub'  // ID учетных данных Docker Hub в Jenkins
-        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-credentials'  // ID учетных данных для подключения к Kubernetes в Jenkins
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Получение кода из GitHub
-                git branch: 'master', url: '<https://github.com/DeluxWebSite/app-nginx-static.git>'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Получение текущего тега, если есть
-                    def tag = env.GIT_TAG_NAME ?: 'latest'
-                    // Сборка Docker-образа
-                    sh "docker build -t ${DOCKER_HUB_REPO}:${tag} ."
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-           steps {
-             withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_HUB_PAT')]) {
-               sh """
-               echo $DOCKER_HUB_PAT | docker login -u sergeymeljnick78 --password-stdin
-               docker push sergeymeljnick78/myapp:latest
-               """
-            }
-        }
-    }
-
-        stage('Deploy to Kubernetes') {
-            when {
-                tag "v*" // Деплой выполняется только при создании тега
-            }
-            steps {
-                script {
-                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
-                        def tag = env.GIT_TAG_NAME ?: 'latest'
-                        // Применение конфигурации деплоя в Kubernetes
-                        sh """
-                        kubectl set image deployment/nginx-static-deployment nginx-static=${DOCKER_HUB_REPO}:${tag}
-                        kubectl rollout status deployment/nginx-static-deployment
-                        """
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
-
-* но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions
-
+*но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions*
+*добавил Secrets для доступа на Git, DockerHub, K8S*
 ![добавил Secrets для доступа на Git, DockerHub, K8S](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
+*создал pipline*
 ![создал pipline](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
+*создал и запустил runner*
 ![создал и запустил runner](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image29.png)
+*добавил строку с тегом на сайт*
 ![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image30.png)
+*новые версии image удачно загружаются на Dockerhub*
 ![новые версии image удачно загружаются на Dockerhub](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
-![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
+*возникла ошибка с deployment на cluster k8s*
+![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image32.png)
 ---
 
 ## Что необходимо для сдачи задания?
