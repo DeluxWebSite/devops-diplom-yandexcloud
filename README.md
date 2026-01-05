@@ -616,6 +616,11 @@ jobs:
 > возникла ошибка с deployment на cluster k8s*
 
 ![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image32.png)
+> исправил ошибку - указал внешний ip node
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image34.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image35.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image36.png)
 ---
 
 ## Что необходимо для сдачи задания?
