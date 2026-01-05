@@ -271,10 +271,6 @@ spec:
 
 ---
 
-* ci/cd-terraform сделал в GitHub Actions -- /github/workflows/cicd.yaml
-
----
-
 ### Установка и настройка CI/CD
 
 Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
@@ -395,6 +391,88 @@ initContainers:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image21.png)
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image22.png)
 
+![решение ошибки в поде, указал правильный values:node3](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image25.png)
+
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image24.png)
+![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image26.png)
+
+* составил pipline:
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_REPO = 'sergeymeljnick78/myapp'
+        DOCKER_CREDENTIALS_ID = 'docker-hub'  // ID учетных данных Docker Hub в Jenkins
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-credentials'  // ID учетных данных для подключения к Kubernetes в Jenkins
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Получение кода из GitHub
+                git branch: 'master', url: '<https://github.com/DeluxWebSite/app-nginx-static.git>'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Получение текущего тега, если есть
+                    def tag = env.GIT_TAG_NAME ?: 'latest'
+                    // Сборка Docker-образа
+                    sh "docker build -t ${DOCKER_HUB_REPO}:${tag} ."
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+           steps {
+             withCredentials([string(credentialsId: 'docker_hub', variable: 'DOCKER_HUB_PAT')]) {
+               sh """
+               echo $DOCKER_HUB_PAT | docker login -u sergeymeljnick78 --password-stdin
+               docker push sergeymeljnick78/myapp:latest
+               """
+            }
+        }
+    }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                tag "v*" // Деплой выполняется только при создании тега
+            }
+            steps {
+                script {
+                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+                        def tag = env.GIT_TAG_NAME ?: 'latest'
+                        // Применение конфигурации деплоя в Kubernetes
+                        sh """
+                        kubectl set image deployment/nginx-static-deployment nginx-static=${DOCKER_HUB_REPO}:${tag}
+                        kubectl rollout status deployment/nginx-static-deployment
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
+
+* но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions
+
+![добавил Secrets для доступа на Git, DockerHub, K8S](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
+![создал pipline](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
+![создал и запустил runner](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image29.png)
+![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image30.png)
+![новые версии image удачно загружаются на Dockerhub](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
+![возникла ошибка с deployment на cluster k8s](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image31.png)
 ---
 
 ## Что необходимо для сдачи задания?

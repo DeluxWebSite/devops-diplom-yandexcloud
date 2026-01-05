@@ -19,9 +19,4 @@ variables.tf
 */kubespray
 /kubespray
 
-**/provider.tf
-*/provider.tf
-provider.tf
-/k8s-ansible/provider.tf
-/backend/provider.tf
-
+/myapp
