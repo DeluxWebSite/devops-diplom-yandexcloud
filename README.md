@@ -501,7 +501,7 @@ pipeline {
 }
 ```
 
-> но возникла проблема: jenkins не видел docker, поэтому решил сделать CI/CD на GinHub Actions*
+> но возникла проблема: jenkins не видел docker, изучение проблемы не выявило результата, поэтому решил сделать CI/CD на GinHub Actions*
 
 > добавил Secrets для доступа на Git, DockerHub, K8S*
 
