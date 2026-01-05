@@ -508,6 +508,98 @@ pipeline {
 ![добавил Secrets для доступа на Git, DockerHub, K8S](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image27.png)
 > создал pipline*
 
+```
+name: melnik-diplom
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+
+env:
+  IMAGE_TAG: sergeymeljnick78/myapp
+  RELEASE_NAME: app-nginx
+  NAMESPACE: netology
+
+jobs:
+  build-and-push:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Extract version from commit messages
+        run: |
+          VERSION=$(git log -1 --pretty=format:%s | grep -oP 'v\d+\.\d+\.\d+')
+          if [[ ! -z "$VERSION" ]]; then
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          else
+            echo "No version found in the commit message"
+            exit 1
+          fi
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_TAG }}:${{ env.VERSION }}
+
+  deploy:
+    needs: build-and-push
+    name: Deploy to Kubernetes
+    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "v1.21.0"
+        id: install
+
+      - name: Extract version from commit messages
+        run: |
+          VERSION=$(git log -1 --pretty=format:%B)
+          if [[ ! -z "$VERSION" ]]; then
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          else
+            echo "No version found in the commit message"
+            exit 1
+          fi
+
+      - name: Replace image tag in deployment.yaml
+        if: env.DEPLOY == 'false'
+
+        run: |
+          sed -i "s|image: sergeymeljnick78/myapp:.*|image: ${{ env.IMAGE_TAG }}|" ./deployment.yaml
+        env:
+          IMAGE_TAG: sergeymeljnick78/myapp:${{ env.VERSION }}
+
+      - name: Create kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+      - name: Authenticate to Kubernetes cluster
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          echo "${KUBECONFIG}" > ${HOME}/.kube/config
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl --insecure-skip-tls-verify apply -f ./deployment.yaml --validate=false
+```
+
 ![создал pipline](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image28.png)
 > создал и запустил runner*
 
