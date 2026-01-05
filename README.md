@@ -514,6 +514,9 @@ pipeline {
 ![создал и запустил runner](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image29.png)
 > добавил строку с тегом на сайт*
 
+![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image33.png)
+> закомитил в Git
+
 ![добавил строку с тегом на сайт](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image30.png)
 > новые версии image удачно загружаются на Dockerhub*
 
