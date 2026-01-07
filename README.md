@@ -623,12 +623,6 @@ jobs:
 ![](https://github.com/DeluxWebSite/devops-diplom-yandexcloud/blob/master/screenshots/image36.png)
 ---
 
-## Что необходимо для сдачи задания?
-
-1. Репозиторий с конфигурационными файлами Terraform и готовность продемонстрировать создание всех ресурсов с нуля.
-2. Пример pull request с комментариями созданными atlantis'ом или снимки экрана из Terraform Cloud или вашего CI-CD-terraform pipeline.
-3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible.
-4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image.
-5. Репозиторий с конфигурацией Kubernetes кластера.
-6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
-7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
+><http://178.154.206.245:32000> - grafana admin/admin
+><http://178.154.206.245:32001> - static page
+><http://178.154.206.245:31080> - staic page version - для наглядности работы ci/cd
